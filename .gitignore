@@ -1,0 +1,7 @@
+# Never upload these
+models/
+*.h5
+*.jpg
+*.png
+__pycache__/
+*.pyc

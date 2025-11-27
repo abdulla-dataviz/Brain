@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="asculine">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Tumor Detection Using CNN Algorithm</title>
+
+    <!-- Fonts -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=Exo+2:wght@800;900&family=Orbitron:wght@900&display=swap" rel="stylesheet">
+
+    <style>
+         :root {
+            --neon: #00d4ff;
+            --light-bg: rgba(240, 248, 255, 0.92);
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --glass: rgba(255, 255, 255, 0.15);
+            --text: #0f172a;
+            --soft-blue: #e0f2fe;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=90') center/cover fixed;
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(224, 242, 254, 0.85), rgba(186, 230, 253, 0.9));
+            z-index: -1;
+        }
+        
+        header {
+            text-align: center;
+            padding: 120px 20px 80px;
+        }
+        /* UPGRADED MAIN HEADING - HOLLYWOOD LEVEL */
+        
+        .hero h1 {
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 900;
+            font-size: 7rem;
+            letter-spacing: -3px;
+            line-height: 1;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #0099ff, #0066ff, #0044aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 80px rgba(0, 212, 255, 0.7);
+            animation: titleGlow 4s infinite alternate;
+        }
+        
+        .hero h1 span {
+            display: block;
+            font-size: 4.5rem;
+            background: linear-gradient(90deg, #00ff88, #00d4ff, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 10px;
+        }
+        
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 60px rgba(0, 212, 255, 0.6), 0 0 100px rgba(0, 150, 255, 0.4);
+            }
+            to {
+                text-shadow: 0 0 100px rgba(0, 212, 255, 0.9), 0 0 140px rgba(0, 100, 255, 0.8), 0 0 180px rgba(0, 50, 255, 0.6);
+            }
+        }
+        
+        .hero p {
+            font-size: 1.6rem;
+            max-width: 900px;
+            margin: 30px auto 0;
+            line-height: 1.7;
+            color: #1e40af;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .upload-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            padding: 50px;
+            text-align: center;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0, 119, 190, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        
+        .upload-area {
+            border: 3px dashed var(--neon);
+            border-radius: 24px;
+            padding: 60px 30px;
+            cursor: pointer;
+            transition: all 0.4s;
+            background: rgba(0, 212, 255, 0.07);
+        }
+        
+        .upload-area:hover {
+            background: rgba(0, 212, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+        }
+        
+        .upload-area i {
+            font-size: 90px;
+            color: var(--neon);
+            margin-bottom: 20px;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .btn-neon {
+            margin-top: 30px;
+            padding: 18px 60px;
+            background: var(--neon);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .btn-neon:hover {
+            background: #00b0d4;
+            transform: translateY(-3px);
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.7);
+        }
+        
+        #preview {
+            max-width: 320px;
+            margin: 25px auto;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 119, 190, 0.2);
+            display: none;
+        }
+        
+        .result {
+            margin-top: 40px;
+            padding: 35px;
+            background: var(--glass);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 1s;
+        }
+        
+        .prediction {
+            font-size: 3.8rem;
+            font-weight: 800;
+            margin: 10px 0;
+            background: linear-gradient(90deg, #0077be, var(--neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .loader {
+            display: none;
+            font-size: 1.6rem;
+            color: var(--neon);
+            margin: 30px 0;
+        }
+        
+        .loader i {
+            animation: spin 1.2s linear infinite;
+        }
+        
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .about,
+        .team {
+            background: var(--card-bg);
+            margin: 60px 0;
+            padding: 60px;
+            border-radius: 28px;
+            box-shadow: 0 15px 40px rgba(0, 119, 190, 0.1);
+            text-align: center;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .member {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 119, 190, 0.1);
+            transition: 0.3s;
+        }
+        
+        .member:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 50px 20px;
+            background: var(--soft-blue);
+            color: #1e40af;
+            font-size: 1rem;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay"></div>
+
+    <header>
+        <div class="hero">
+            <h1>BRAIN TUMOR<br><span>DETECTION SYSTEM</span></h1>
+            <p>A Final-Year Engineering Project by Students of<br>
+                <strong>Secab Institute of Engineering & Technology, Vijayapura</strong></p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="upload-card">
+            <h2 style="margin-bottom:30px; font-size:2.2rem; color:#0077be;">Upload MRI Scan for AI Analysis</h2>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Click or Drop MRI Image Here</h3>
+                <p>Supported: JPG, JPEG, PNG, DCM</p>
+            </div>
+            <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.dcm">
+            <img id="preview" src="" alt="MRI Preview">
+
+            <button class="btn-neon" onclick="uploadImage()">Check Result</button>
+
+            <div class="loader" id="loader">
+                <i class="fas fa-spinner"></i> AI is analyzing your MRI scan...
+            </div>
+
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="about">
+            <h2 style="color:#0077be; font-size:2.5rem;">About This Project</h2>
+            <p style="font-size:1.4rem; margin-top:25px; line-height:1.9; max-width:900px; margin-left:auto; margin-right:auto;">
+                This project aims to develop a Convolutional Neural Network (CNN) model capable of detecting brain tumors from MRI scans, focusing on tumor types such as <strong>Glioma, Meningioma, Pituitary</strong>, and <strong>No-Tumor</strong> categories.<br><br>                The system enhances medical diagnosis by providing fast and accurate tumor classification using deep learning technology.
+            </p>
+        </div>
+
+        <div class="team">
+            <h2 style="color:#0077be; font-size:2.5rem;">Project Team Members</h2>
+            <div class="team-grid">
+                <div class="member">
+                    <h3>Abdulla Momin</h3>
+                    <p>2SA22CS001<br>+91 9606749598</p>
+                </div>
+                <div class="member">
+                    <h3>Abdulraheem Patel</h3>
+                    <p>2SA22CS002<br>+91 7829499782</p>
+                </div>
+                <div class="member">
+                    <h3>Ameer Maniyar</h3>
+                    <p>2SA22CS005<br>+91 8277666226</p>
+                </div>
+                <div class="member">
+                    <h3>Mohammadzyan Bagsiraj</h3>
+                    <p>2SA22CS028<br>+91 8217678477</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        © 2025 Brain Tumor Detection System • Secab Institute of Engineering & Technology<br> This website is created purely for academic and research purposes. All MRI data used is privacy-protected and confidential.
+    </footer>
+
+    <script>
+        // CHANGE THIS TO YOUR PUBLIC URL AFTER DEPLOYMENT
+        const API_URL = "http://127.0.0.1:5000/predict"; // For local testing
+        // When you deploy to Render/Railway → change to: https://your-app.onrender.com/predict
+
+        async function uploadImage() {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) return alert("Please select an image!");
+
+            document.getElementById('preview').src = URL.createObjectURL(file);
+            document.getElementById('preview').style.display = 'block';
+
+            const loader = document.getElementById('loader');
+            const result = document.getElementById('result');
+            result.innerHTML = '';
+            result.classList.remove('show');
+            loader.style.display = 'block';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                loader.style.display = 'none';
+
+                if (data.error) {
+                    result.innerHTML = `<p style="color:red">Error: ${data.error}</p>`;
+                    return;
+                }
+
+                const status = data.prediction === 'notumor' ? 'No Tumor Detected' : 'Brain Tumor Detected';
+                const color = data.prediction === 'notumor' ? '#16a34a' : '#dc2626';
+
+                result.innerHTML = `
+            <h2 style="color:${color}">${status}</h2>
+            <h1 class="prediction">${data.prediction.toUpperCase()}</h1>
+            <h3>Confidence: ${data.confidence}%</h3>
+            <p>Glioma: ${data.probabilities.glioma}% • Meningioma: ${data.probabilities.meningioma}% • No Tumor: ${data.probabilities.notumor}% • Pituitary: ${data.probabilities.pituitary}%</p>
+        `;
+                result.classList.add('show');
+
+            } catch (err) {
+                loader.style.display = 'none';
+                result.innerHTML = `<p style="color:red">Server not responding. Check if Flask is running.</p>`;
+            }
+        }
+    </script>
+</body>
+
+</html>
